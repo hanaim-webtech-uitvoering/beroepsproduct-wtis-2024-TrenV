@@ -10,27 +10,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['action'] === 'login') {
     try {
         $db = maakVerbinding();
 
+        // Controleer de rol
+        $roleValue = ($role === 'medewerker') ? 'Personnel' : 'klant';
+
+        // Haal gebruiker op uit de database
         $stmt = $db->prepare("
-            SELECT * FROM [User] WHERE username = ? AND role = ?
+            SELECT * FROM [User] 
+            WHERE username = ? 
+            AND role = ?
         ");
-        $stmt->execute([$username, $role]);
+        $stmt->execute([$username, $roleValue]);
 
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($user && password_verify($password, $user['password'])) {
+        // Controleer gebruikersnaam en wachtwoord
+        if ($user && $password === $user['password']) { // Geen password_verify
+            // Sla sessie-informatie op
             $_SESSION['username'] = $user['username'];
             $_SESSION['first_name'] = $user['first_name'];
             $_SESSION['role'] = $user['role'];
 
-            echo "Inloggen succesvol! Welkom, " . htmlspecialchars($user['first_name']) . ".";
+            // Redirect op basis van rol
             if ($role === 'klant') {
-                echo '<br><a href="../paginas/menu.php">Ga naar het menu</a>';
+                header("Location: ../paginas/menu.php");
+                exit;
+            } else if ($role === 'medewerker') {
+                header("Location: ../paginas/bestelOverzicht.php");
+                exit;
             } else {
-                echo '<br><a href="../paginas/beheer.php">Ga naar het beheerpaneel</a>';
+                die("Ongeldige gebruikersrol.");
             }
         } else {
-            echo "Onjuiste gebruikersnaam of wachtwoord.";
-            echo '<br><a href="../paginas/' . ($role === 'klant' ? 'klantLogin.php' : 'medewerkerLogin.php') . '">Probeer opnieuw</a>';
+            // Foutieve inloggegevens
+            $redirectPage = $role === 'klant' ? 'klantLogin.php' : 'medewerkerLogin.php';
+            die("Onjuiste gebruikersnaam of wachtwoord. <br><a href='../paginas/$redirectPage'>Probeer opnieuw</a>");
         }
     } catch (Exception $e) {
         die("Fout bij het inloggen: " . $e->getMessage());

@@ -2,85 +2,100 @@
 session_start();
 require_once '../db_connectie.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
-    $action = $_POST['action'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $action = $_POST['action'] ?? '';
 
-    if ($action === 'add_to_cart' && isset($_POST['product_name'])) {
-        $productName = $_POST['product_name'];
-        $quantity = isset($_POST['quantity']) ? (int)$_POST['quantity'] : 1;
+    // Voeg een product toe aan het winkelmandje
+    if ($action === 'add_to_cart') {
+        $productName = $_POST['product_name'] ?? '';
+        $quantity = intval($_POST['quantity'] ?? 1);
 
-        if (!isset($_SESSION['bestelling'])) {
-            $_SESSION['bestelling'] = [];
-        }
-
-        $gevonden = false;
-
-        foreach ($_SESSION['bestelling'] as &$product) {
-            if ($product['name'] === $productName) {
-                $product['quantity'] += $quantity;
-                $gevonden = true;
-                break;
-            }
-        }
-
-        if (!$gevonden) {
-            $_SESSION['bestelling'][] = [
-                'name' => $productName,
-                'quantity' => $quantity,
-            ];
-        }
-
-        header('Location: ../paginas/menu.php');
-        exit;
-    }
-
-    if ($action === 'checkout' && isset($_SESSION['bestelling']) && !empty($_SESSION['bestelling'])) {
-        try {
-            $db = maakVerbinding();
-
-            $client_username = $_SESSION['username'] ?? null; // Gebruiker uit de sessie
-            $address = $_POST['adres'] ?? null; // Adres uit formulier
-            $name = $_POST['naam'] ?? null;
-
-            if (!$client_username || !$address || !$name) {
-                die("Vul alstublieft alle verplichte velden in.");
+        if (!empty($productName)) {
+            // Controleer of er al een bestelling bestaat in de sessie
+            if (!isset($_SESSION['bestelling'])) {
+                $_SESSION['bestelling'] = [];
             }
 
-            $datetime = date('Y-m-d H:i:s');
-            $status = 0;
-            $personnel_username = 'admin'; // Statische placeholder voor medewerker
+            $gevonden = false;
 
-            $db->beginTransaction();
-
-            $stmt = $db->prepare("
-                INSERT INTO Pizza_Order (client_username, personnel_username, datetime, status, address)
-                VALUES (?, ?, ?, ?, ?)
-            ");
-            $stmt->execute([$client_username, $personnel_username, $datetime, $status, $address]);
-
-            $order_id = $db->lastInsertId();
-
-            $stmt = $db->prepare("
-                INSERT INTO Pizza_Order_Product (order_id, product_name, quantity)
-                VALUES (?, ?, ?)
-            ");
-
-            foreach ($_SESSION['bestelling'] as $product) {
-                $stmt->execute([$order_id, $product['name'], $product['quantity']]);
+            // Kijk of het product al in het winkelmandje zit
+            foreach ($_SESSION['bestelling'] as &$product) {
+                if ($product['name'] === $productName) {
+                    $product['quantity'] += $quantity;
+                    $gevonden = true;
+                    break;
+                }
             }
 
-            $db->commit();
+            // Voeg een nieuw product toe als het nog niet bestaat
+            if (!$gevonden) {
+                $_SESSION['bestelling'][] = [
+                    'name' => $productName,
+                    'quantity' => $quantity,
+                ];
+            }
 
-            unset($_SESSION['bestelling']);
-
-            header("Location: ../paginas/bevestiging.php?order_id=$order_id");
+            header('Location: ../paginas/menu.php'); // Terug naar menu
             exit;
-        } catch (Exception $e) {
-            $db->rollBack();
-            echo "Er is een fout opgetreden: " . $e->getMessage();
+        } else {
+            die("Fout: Productnaam ontbreekt.");
         }
     }
 
-    die("Ongeldige actie of onvolledige gegevens.");
+    // Verwijder één exemplaar van een product uit het winkelmandje
+    if ($action === 'remove_one') {
+        $productName = $_POST['product_name'] ?? '';
+
+        if (!empty($productName) && isset($_SESSION['bestelling'])) {
+            foreach ($_SESSION['bestelling'] as $key => &$product) {
+                if ($product['name'] === $productName) {
+                    $product['quantity'] -= 1;
+                    if ($product['quantity'] <= 0) {
+                        unset($_SESSION['bestelling'][$key]);
+                    }
+                    break;
+                }
+            }
+
+            header('Location: ../paginas/winkelmandje.php');
+            exit;
+        } else {
+            die("Fout: Productnaam ontbreekt of winkelmandje is leeg.");
+        }
+    }
+
+    // Verwijder alle exemplaren van een product uit het winkelmandje
+    if ($action === 'remove_all') {
+        $productName = $_POST['product_name'] ?? '';
+
+        if (!empty($productName) && isset($_SESSION['bestelling'])) {
+            foreach ($_SESSION['bestelling'] as $key => $product) {
+                if ($product['name'] === $productName) {
+                    unset($_SESSION['bestelling'][$key]);
+                    break;
+                }
+            }
+
+            header('Location: ../paginas/winkelmandje.php');
+            exit;
+        } else {
+            die("Fout: Productnaam ontbreekt of winkelmandje is leeg.");
+        }
+    }
+
+    // Afronden van de bestelling
+    if ($action === 'checkout') {
+        if (isset($_SESSION['bestelling']) && !empty($_SESSION['bestelling'])) {
+            // Hier zou de code komen voor het verwerken van de bestelling
+            header('Location: ../paginas/bestellen.php');
+            exit;
+        } else {
+            die("Uw winkelmandje is leeg. Voeg eerst producten toe.");
+        }
+    }
+
+    die("Ongeldige actie.");
+} else {
+    die("Ongeldig verzoek.");
 }
 ?>

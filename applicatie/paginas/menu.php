@@ -52,8 +52,6 @@ maakHeader("Menu");
 ?>
 
     <body>
-    <h1>Ons Menu</h1>
-
     <h2>Winkelmandje</h2>
     <?php if (!empty($_SESSION['bestelling'])): ?>
         <p>Uw winkelmandje bevat <?= $winkelmandjeCount ?> producten:</p>

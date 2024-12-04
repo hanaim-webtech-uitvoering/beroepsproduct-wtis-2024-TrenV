@@ -6,6 +6,7 @@ require '../db_connectie.php';
 $isLoggedIn = isset($_SESSION['username']);
 $klantGegevens = [];
 
+// Haal klantgegevens op indien ingelogd
 if ($isLoggedIn) {
     try {
         $db = maakVerbinding();
@@ -23,7 +24,7 @@ if ($isLoggedIn) {
 }
 
 maakHead();
-maakHeader("Bestelgegevens invoeren");
+maakHeader($isLoggedIn ? "Profiel" : "Inloggen");
 ?>
 
     <body>
@@ -31,16 +32,19 @@ maakHeader("Bestelgegevens invoeren");
     <form method="post" action="../functies/bestelFuncties.php">
         <input type="hidden" name="action" value="checkout">
 
+        <!-- Naam invoerveld -->
         <label for="naam">Naam:</label><br>
         <input type="text" id="naam" name="naam" placeholder="Voor- en achternaam"
                value="<?= $isLoggedIn ? htmlspecialchars($klantGegevens['first_name'] . ' ' . $klantGegevens['last_name']) : '' ?>"
             <?= $isLoggedIn ? 'readonly' : 'required' ?>><br><br>
 
+        <!-- Adres invoerveld -->
         <label for="adres">Adres:</label><br>
         <input type="text" id="adres" name="adres" placeholder="Adres"
                value="<?= $isLoggedIn ? htmlspecialchars($klantGegevens['address']) : '' ?>"
             <?= $isLoggedIn ? 'readonly' : 'required' ?>><br><br>
 
+        <!-- Overzicht van het winkelmandje -->
         <label for="bestelling">Bestelling:</label><br>
         <table border="1">
             <thead>
@@ -65,6 +69,7 @@ maakHeader("Bestelgegevens invoeren");
             </tbody>
         </table><br>
 
+        <!-- Bestelling plaatsen knop -->
         <button type="submit">Bestelling plaatsen</button>
     </form>
     </body>
