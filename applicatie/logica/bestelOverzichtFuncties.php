@@ -1,5 +1,4 @@
 <?php
-session_start();
 require_once '../data/bestellingenData.php';
 
 /**
@@ -13,14 +12,19 @@ function controleerToegang() {
 
 /**
  * Haal het volledige overzicht van bestellingen op.
+ *
+ * @return array Alle bestellingen inclusief details.
  */
 function haalOverzichtBestellingen() {
-    return haalAlleBestellingenOp();
+    return haalAlleBestellingenOp(); // Haalt bestellingen op via de datalaag.
 }
 
 /**
  * Werk de status van een bestelling bij.
+ *
+ * @param int $orderId Het ID van de bestelling die moet worden bijgewerkt.
+ * @param int $status De nieuwe status van de bestelling.
  */
 function wijzigBestellingStatus($orderId, $status) {
-    updateBestellingStatus($orderId, $status);
+    updateBestellingStatus($orderId, $status); // Update status via de datalaag.
 }

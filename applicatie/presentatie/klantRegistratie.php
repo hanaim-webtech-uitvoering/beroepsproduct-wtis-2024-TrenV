@@ -1,5 +1,5 @@
 <?php
-require_once '../helpers/paginaFuncties.php';
+require_once '../logica/paginaFuncties.php';
 
 maakHead();
 maakHeader("Registreren als Klant");

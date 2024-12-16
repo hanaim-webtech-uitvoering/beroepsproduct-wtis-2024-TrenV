@@ -1,6 +1,8 @@
 <?php
-session_start();
-require_once '../data/productenData.php';
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 require_once '../data/bestellingenData.php';
 
 /**
@@ -11,26 +13,28 @@ function voegProductToeAanWinkelmandje($productName, $quantity) {
         $_SESSION['bestelling'] = [];
     }
 
-    $gevonden = false;
-
     foreach ($_SESSION['bestelling'] as &$product) {
         if ($product['name'] === $productName) {
             $product['quantity'] += $quantity;
-            $gevonden = true;
-            break;
+            return;
         }
     }
 
-    if (!$gevonden) {
-        $_SESSION['bestelling'][] = [
-            'name' => $productName,
-            'quantity' => $quantity,
-        ];
-    }
+    $_SESSION['bestelling'][] = [
+        'name' => $productName,
+        'quantity' => $quantity,
+    ];
 }
 
 /**
- * Verwijder één exemplaar van een product uit het winkelmandje.
+ * Haal het winkelmandje op.
+ */
+function haalWinkelmandjeOp() {
+    return $_SESSION['bestelling'] ?? [];
+}
+
+/**
+ * Verwijder één product uit het winkelmandje.
  */
 function verwijderProductUitWinkelmandje($productName) {
     if (isset($_SESSION['bestelling'])) {
@@ -47,7 +51,7 @@ function verwijderProductUitWinkelmandje($productName) {
 }
 
 /**
- * Verwijder alle exemplaren van een product uit het winkelmandje.
+ * Verwijder alle producten uit het winkelmandje.
  */
 function verwijderAlleProductenUitWinkelmandje($productName) {
     if (isset($_SESSION['bestelling'])) {
@@ -68,6 +72,7 @@ function afrondenBestelling($klantNaam, $adres) {
         die("Uw winkelmandje is leeg. Voeg eerst producten toe.");
     }
 
-    voegBestellingToe($klantNaam, $adres, $_SESSION['bestelling']);
+    voegBestellingToe($klantNaam, $adres, $_SESSION['bestelling']); // Functie uit bestellingenData.php
     $_SESSION['bestelling'] = []; // Leeg winkelmandje na afronding
 }
+?>

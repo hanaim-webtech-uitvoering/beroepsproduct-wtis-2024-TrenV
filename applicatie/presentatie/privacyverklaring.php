@@ -1,6 +1,5 @@
 <?php
-session_start();
-require '../functies/paginaFuncties.php';
+require_once '../logica/paginaFuncties.php';
 
 maakHead();
 maakHeader("Privacyverklaring");

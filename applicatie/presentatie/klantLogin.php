@@ -1,5 +1,5 @@
 <?php
-require_once '../helpers/paginaFuncties.php';
+require_once '../logica/paginaFuncties.php';
 require_once '../data/gebruikersData.php'; // Voor database-interacties
 
 // Controleer of het formulier correct is ingediend
@@ -38,7 +38,6 @@ maakHeader("Inloggen als Klant");
 ?>
 
 <body>
-    <h2>Inloggen als Klant</h2>
     <?php if (isset($_GET['error']) && $_GET['error'] === 'invalid_credentials'): ?>
         <p style="color: red;">Ongeldige gebruikersnaam of wachtwoord. Probeer opnieuw.</p>
     <?php endif; ?>

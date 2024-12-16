@@ -1,6 +1,5 @@
 <?php
-session_start();
-require_once '../helpers/paginaFuncties.php';
+require_once '../logica/paginaFuncties.php';
 require_once '../logica/bestelFuncties.php';
 
 // Controleer of de gebruiker is ingelogd

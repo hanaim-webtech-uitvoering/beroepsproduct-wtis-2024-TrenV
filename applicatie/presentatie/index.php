@@ -1,6 +1,5 @@
 <?php
-session_start();
-require '../helpers/paginaFuncties.php';
+require_once '../logica/paginaFuncties.php';
 maakHead();
 maakHeader("Welkom bij Pizzeria Sole Machina");
 ?>
