@@ -12,36 +12,52 @@ function haalMenuProductenOp() {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
-    $redirectUrl = '../presentatie/menu.php'; // Standaard terug naar menu na actie
+    $redirectUrl = '../presentatie/menu.php'; // Standaard terug naar het menu
 
-    switch ($action) {
-        case 'add_to_cart':
-            voegProductToeAanWinkelmandje($_POST['product_name'], intval($_POST['quantity']));
-            // Blijf op menu.php
-            break;
+    try {
+        switch ($action) {
+            case 'add_to_cart':
+                if (!empty($_POST['product_name']) && isset($_POST['quantity'])) {
+                    voegProductToeAanWinkelmandje($_POST['product_name'], intval($_POST['quantity']));
+                } else {
+                    throw new Exception("Onjuiste invoer bij het toevoegen aan winkelmandje.");
+                }
+                break;
 
-        case 'remove_one':
-            verwijderProductUitWinkelmandje($_POST['product_name']);
-            $redirectUrl = '../presentatie/winkelmandje.php'; // Terug naar winkelmandje
-            break;
+            case 'remove_one':
+                if (!empty($_POST['product_name'])) {
+                    verwijderProductUitWinkelmandje($_POST['product_name']);
+                } else {
+                    throw new Exception("Productnaam ontbreekt bij verwijderen.");
+                }
+                break;
 
-        case 'remove_all':
-            verwijderAlleProductenUitWinkelmandje($_POST['product_name']);
-            $redirectUrl = '../presentatie/winkelmandje.php'; // Terug naar winkelmandje
-            break;
+            case 'remove_all':
+                if (!empty($_POST['product_name'])) {
+                    verwijderAlleProductenUitWinkelmandje($_POST['product_name']);
+                } else {
+                    throw new Exception("Productnaam ontbreekt bij volledig verwijderen.");
+                }
+                break;
 
-        case 'checkout':
-            afrondenBestelling($_POST['naam'], $_POST['adres']);
-            $redirectUrl = '../presentatie/bevestiging.php'; // Stuur gebruiker naar een bevestigingspagina
-            break;
+            case 'checkout':
+                if (!empty($_POST['naam']) && !empty($_POST['adres'])) {
+                    afrondenBestelling($_POST['naam'], $_POST['adres']);
+                    $_SESSION['bestelling_afgerond'] = true; // Zet een sessievariabele om de status bij te houden
+                    $redirectUrl = '../presentatie/bevestiging.php'; // Verwijs naar bevestigingspagina
+                } else {
+                    throw new Exception("Naam of adres ontbreekt bij afrekenen.");
+                }
+                break;
 
-        default:
-            // Onbekende actie, terug naar menu
-            $redirectUrl = '../presentatie/menu.php';
-            break;
+            default:
+                throw new Exception("Onbekende actie: $action");
+        }
+    } catch (Exception $e) {
+        // Opslaan van foutmelding in de sessie voor weergave op de redirectpagina
+        $_SESSION['error_message'] = $e->getMessage();
     }
 
-    // Redirect naar de juiste pagina na de actie
     header("Location: $redirectUrl");
     exit;
 }

@@ -2,10 +2,8 @@
 require_once '../logica/paginaFuncties.php';
 require_once '../logica/bestelOverzichtFuncties.php';
 
-// Controleer toegang
 controleerToegang();
 
-// Haal alle bestellingen op
 $bestellingen = haalOverzichtBestellingen();
 
 maakHead();
@@ -13,7 +11,6 @@ maakHeader("Besteloverzicht Personeel");
 ?>
 
 <body>
-<!-- Tabel met bestellingen -->
 <table>
     <thead>
     <tr>

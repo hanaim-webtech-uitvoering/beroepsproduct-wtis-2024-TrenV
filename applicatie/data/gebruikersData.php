@@ -1,14 +1,7 @@
 <?php
 require_once 'db_connectie.php';
 
-/**
- * Haal een gebruiker op basis van gebruikersnaam en rol.
- *
- * @param string $username
- * @param string $role
- * @return array|null
- * @throws Exception Als er een fout optreedt bij de databasequery.
- */
+
 function haalGebruikerOp($username, $role) {
     try {
         $db = maakVerbinding();
@@ -24,13 +17,6 @@ function haalGebruikerOp($username, $role) {
     }
 }
 
-/**
- * Update een wachtwoord van een gebruiker.
- *
- * @param string $username
- * @param string $hashedPassword
- * @throws Exception Bij een fout tijdens de update.
- */
 function updateWachtwoord($username, $hashedPassword) {
     try {
         $db = maakVerbinding();
@@ -41,11 +27,7 @@ function updateWachtwoord($username, $hashedPassword) {
     }
 }
 
-/**
- * Update alle wachtwoorden in de database die nog niet gehashed zijn.
- *
- * @throws Exception Bij een fout tijdens de update.
- */
+
 function updateAlleWachtwoorden() {
     try {
         $db = maakVerbinding();

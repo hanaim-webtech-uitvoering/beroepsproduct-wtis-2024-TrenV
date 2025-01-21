@@ -7,7 +7,6 @@ require_once '../logica/paginaFuncties.php';
 require_once '../logica/menuFuncties.php';
 require_once '../logica/bestelFuncties.php';
 
-// Haal producten op
 $productlijst = haalMenuProductenOp();
 $winkelmandje = haalWinkelmandjeOp();
 
@@ -18,7 +17,6 @@ maakHeader("Menu");
     <body>
     <h1>Ons Menu</h1>
 
-    <!-- Productenoverzicht -->
     <?php if (!empty($productlijst)): ?>
         <table>
             <thead>
@@ -85,7 +83,6 @@ maakHeader("Menu");
         </table>
         <br>
 
-        <!-- Checkout formulier -->
         <form method="post" action="../logica/menuFuncties.php">
             <input type="hidden" name="action" value="checkout">
             <label for="naam">Naam:</label><br>

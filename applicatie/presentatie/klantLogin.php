@@ -1,25 +1,20 @@
 <?php
 require_once '../logica/paginaFuncties.php';
-require_once '../data/gebruikersData.php'; // Voor database-interacties
+require_once '../data/gebruikersData.php';
 
-// Controleer of het formulier correct is ingediend
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username'], $_POST['password'])) {
     $username = $_POST['username'];
     $password = $_POST['password'];
-    $role = $_POST['role'] ?? 'Client'; // Standaardrol is 'Client'
+    $role = $_POST['role'] ?? 'Client';
 
-    // Haal gebruiker op via de data-laag
     try {
-        $gebruiker = haalGebruikerOp($username, $role); // Functie uit gebruikersData.php
+        $gebruiker = haalGebruikerOp($username, $role);
 
-        // Controleer wachtwoord
         if ($gebruiker && password_verify($password, $gebruiker['password'])) {
-            // Sessie instellen
             session_start();
             $_SESSION['username'] = $gebruiker['username'];
             $_SESSION['role'] = $gebruiker['role'];
 
-            // Redirect naar menu
             header("Location: menu.php");
             exit;
         } else {
@@ -27,7 +22,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username'], $_POST['p
             exit;
         }
     } catch (Exception $e) {
-        // Log de fout en toon een generieke foutmelding
         header("Location: klantLogin.php?error=invalid_credentials");
         exit;
     }

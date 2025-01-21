@@ -2,13 +2,11 @@
 require_once '../logica/paginaFuncties.php';
 require_once '../logica/bestelOverzichtFuncties.php';
 
-// Controleer of de gebruiker is ingelogd
 if (!isset($_SESSION['klantgegevens'])) {
     header("Location: klantLogin.php?error=not_logged_in");
     exit;
 }
 
-// Haal klantgegevens en bestellingen op via de logica-laag
 $klantGegevens = haalKlantGegevensOp();
 $bestellingen = haalBestellingenOp();
 

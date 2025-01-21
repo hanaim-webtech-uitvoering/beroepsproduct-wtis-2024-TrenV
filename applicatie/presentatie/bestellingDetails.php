@@ -2,10 +2,8 @@
 require_once '../logica/paginaFuncties.php';
 require_once '../logica/bestelOverzichtFuncties.php';
 
-// Controleer of de gebruiker toegang heeft
 controleerToegang();
 
-// Haal bestellingdetails op
 $order_id = $_GET['order_id'] ?? null;
 if (!$order_id) {
     die("Geen bestelling geselecteerd. Ga terug naar het overzicht.");
@@ -19,7 +17,6 @@ maakHeader("Bestellingdetails");
 <body>
 <h1>Bestellingdetails</h1>
 
-<!-- Bestellinggegevens -->
 <h2>Bestelling #<?= htmlspecialchars($bestellingDetails['order_id']) ?></h2>
 <table border="1">
     <tr>
