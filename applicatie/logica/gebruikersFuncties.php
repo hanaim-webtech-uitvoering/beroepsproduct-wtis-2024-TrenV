@@ -64,6 +64,11 @@ function handleRegister() {
     $role = $_POST['role'];
 
     try {
+        // Controleer of de gebruikersnaam al in gebruik is
+        if (gebruikersnaamBestaat($username)) {
+            throw new Exception("De gebruikersnaam is al in gebruik. Kies een andere.");
+        }
+
         registreerNieuweGebruiker($username, $password, $firstName, $lastName, $address, $role);
 
         header("Location: ../presentatie/klantLogin.php?success=registered");

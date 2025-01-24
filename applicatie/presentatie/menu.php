@@ -63,7 +63,6 @@ maakHeader("Menu");
         <p>Geen producten beschikbaar.</p>
     <?php endif; ?>
 
-    <!-- Winkelmandje -->
     <h2>Uw Winkelmandje</h2>
     <?php if (!empty($winkelmandje)): ?>
         <table>
