@@ -1,7 +1,7 @@
 <?php
 require_once 'db_connectie.php';
 
-function voegBestellingToe($klantNaam, $adres, $producten) {
+function voegBestellingToe($klantNaam, $adres, $producten, $clientUsername = null) {
     try {
         $db = maakVerbinding();
         $db->beginTransaction();
@@ -16,14 +16,15 @@ function voegBestellingToe($klantNaam, $adres, $producten) {
 
         $personeelUsername = $personeelslid['username'];
 
+        $initialStatus = 'Nieuw';
+
         $stmt = $db->prepare("
             INSERT INTO Pizza_Order (client_name, address, datetime, status, personnel_username) 
-            VALUES (?, ?, GETDATE(), 0, ?)
+            VALUES (?, ?, GETDATE(), ?, ?)
         ");
-        $stmt->execute([$klantNaam, $adres, $personeelUsername]);
+        $stmt->execute([$clientUsername, $adres, $initialStatus, $personeelUsername]);
         $orderId = $db->lastInsertId();
 
-        // Voeg producten toe
         $stmtProduct = $db->prepare("
             INSERT INTO Pizza_Order_Product (order_id, product_name, quantity) 
             VALUES (?, ?, ?)

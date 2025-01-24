@@ -57,8 +57,10 @@ function afrondenBestelling($klantNaam, $adres) {
         die("Uw winkelmandje is leeg. Voeg eerst producten toe.");
     }
 
+    $clientUsername = $_SESSION['username'] ?? null;
+
     try {
-        $orderId = voegBestellingToe($klantNaam, $adres, $_SESSION['bestelling']);
+        $orderId = voegBestellingToe($klantNaam, $adres, $_SESSION['bestelling'], $clientUsername);
 
         $_SESSION['bestelling_afgerond_details'] = [
             'naam' => $klantNaam,

@@ -5,7 +5,7 @@ require_once '../logica/bestelOverzichtFuncties.php';
 controleerToegang();
 
 $sortColumn = $_GET['sort'] ?? 'datetime';
-$sortOrder = $_GET['order'] ?? 'desc'; 
+$sortOrder = $_GET['order'] ?? 'desc';
 
 $nextSortOrder = $sortOrder === 'asc' ? 'desc' : 'asc';
 
@@ -16,7 +16,6 @@ maakHeader("Besteloverzicht Personeel");
 ?>
 
     <body>
-    <h1>Overzicht van Bestellingen</h1>
     <table border="1">
         <thead>
         <tr>
@@ -57,8 +56,6 @@ maakHeader("Besteloverzicht Personeel");
         <?php endif; ?>
         </tbody>
     </table>
-
-    <a href="../presentatie/medewerkerLogin.php">Uitloggen</a>
     </body>
 
 <?php maakFooter(); ?>
