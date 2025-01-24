@@ -40,6 +40,42 @@ function voegBestellingToe($klantNaam, $adres, $producten) {
     }
 }
 
+
+function haalOverzichtBestellingenGesorteerd($sortColumn, $sortOrder) {
+    try {
+        $db = maakVerbinding();
+
+        $allowedSortColumns = ['order_id', 'datetime', 'status', 'personnel_username'];
+        if (!in_array($sortColumn, $allowedSortColumns)) {
+            $sortColumn = 'datetime'; // Default kolom
+        }
+
+        $sortOrder = strtolower($sortOrder) === 'asc' ? 'ASC' : 'DESC';
+
+        $stmt = $db->prepare("
+            SELECT 
+                po.order_id, 
+                po.client_name, 
+                po.address, 
+                po.datetime, 
+                po.status, 
+                po.personnel_username,
+                STRING_AGG(CONCAT(pop.product_name, ' (', pop.quantity, ')'), ', ') AS producten
+            FROM 
+                Pizza_Order po
+            LEFT JOIN 
+                Pizza_Order_Product pop ON po.order_id = pop.order_id
+            GROUP BY 
+                po.order_id, po.client_name, po.address, po.datetime, po.status, po.personnel_username
+            ORDER BY 
+                $sortColumn $sortOrder
+        ");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (Exception $e) {
+        throw new Exception("Fout bij het ophalen van gesorteerde bestellingen: " . $e->getMessage());
+    }
+}
 function haalAlleBestellingenOp() {
     try {
         $db = maakVerbinding();

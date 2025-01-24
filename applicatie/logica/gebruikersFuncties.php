@@ -64,7 +64,6 @@ function handleRegister() {
     $role = $_POST['role'];
 
     try {
-        // Controleer of de gebruikersnaam al in gebruik is
         if (gebruikersnaamBestaat($username)) {
             throw new Exception("De gebruikersnaam is al in gebruik. Kies een andere.");
         }

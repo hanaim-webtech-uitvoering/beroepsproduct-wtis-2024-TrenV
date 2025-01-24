@@ -21,7 +21,7 @@ function gebruikersnaamBestaat($username) {
         $db = maakVerbinding();
         $stmt = $db->prepare("SELECT COUNT(*) FROM [User] WHERE username = ?");
         $stmt->execute([$username]);
-        return $stmt->fetchColumn() > 0; // Geeft true terug als de gebruikersnaam bestaat
+        return $stmt->fetchColumn() > 0;
     } catch (Exception $e) {
         throw new Exception("Fout bij controleren van gebruikersnaam: " . $e->getMessage());
     }

@@ -4,22 +4,29 @@ require_once '../logica/bestelOverzichtFuncties.php';
 
 controleerToegang();
 
-$bestellingen = haalOverzichtBestellingen();
+$sortColumn = $_GET['sort'] ?? 'datetime';
+$sortOrder = $_GET['order'] ?? 'desc'; 
+
+$nextSortOrder = $sortOrder === 'asc' ? 'desc' : 'asc';
+
+$bestellingen = haalOverzichtBestellingenGesorteerd($sortColumn, $sortOrder);
 
 maakHead();
 maakHeader("Besteloverzicht Personeel");
 ?>
 
     <body>
+    <h1>Overzicht van Bestellingen</h1>
     <table border="1">
         <thead>
         <tr>
-            <th>Ordernummer</th>
+            <th><a href="?sort=order_id&order=<?= $nextSortOrder ?>">Ordernummer</a></th>
             <th>Klant</th>
-            <th>Datum en Tijd</th>
+            <th><a href="?sort=datetime&order=<?= $nextSortOrder ?>">Datum en Tijd</a></th>
             <th>Inhoud</th>
             <th>Adres</th>
-            <th>Status</th>
+            <th><a href="?sort=status&order=<?= $nextSortOrder ?>">Status</a></th>
+            <th><a href="?sort=personnel_username&order=<?= $nextSortOrder ?>">Medewerker</a></th>
             <th>Acties</th>
         </tr>
         </thead>
@@ -28,6 +35,7 @@ maakHeader("Besteloverzicht Personeel");
             <?php foreach ($bestellingen as $bestelling): ?>
                 <?php
                 $formattedDateTime = (new DateTime($bestelling['datetime']))->format('Y-m-d H:i');
+                $statusLabels = ['Nieuw', 'In de oven', 'Onderweg', 'Afgeleverd'];
                 ?>
                 <tr>
                     <td><?= htmlspecialchars($bestelling['order_id']) ?></td>
@@ -35,7 +43,8 @@ maakHeader("Besteloverzicht Personeel");
                     <td><?= htmlspecialchars($formattedDateTime) ?></td>
                     <td><?= htmlspecialchars($bestelling['producten']) ?></td>
                     <td><?= htmlspecialchars($bestelling['address']) ?></td>
-                    <td><?= htmlspecialchars($bestelling['status']) ?></td>
+                    <td><?= htmlspecialchars($statusLabels[$bestelling['status']] ?? 'Onbekend') ?></td>
+                    <td><?= htmlspecialchars($bestelling['personnel_username'] ?? 'Niet toegewezen') ?></td>
                     <td>
                         <a href="bestellingDetails.php?order_id=<?= htmlspecialchars($bestelling['order_id']) ?>">Bekijk details</a>
                     </td>
@@ -43,13 +52,13 @@ maakHeader("Besteloverzicht Personeel");
             <?php endforeach; ?>
         <?php else: ?>
             <tr>
-                <td colspan="7">Geen bestellingen gevonden.</td>
+                <td colspan="8">Geen bestellingen gevonden.</td>
             </tr>
         <?php endif; ?>
         </tbody>
     </table>
 
-    <a href="bestelOverzicht.php">Terug naar het overzicht</a>
+    <a href="../presentatie/medewerkerLogin.php">Uitloggen</a>
     </body>
 
 <?php maakFooter(); ?>
