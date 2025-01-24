@@ -1,12 +1,6 @@
 <?php
 require_once 'db_connectie.php';
 
-/**
- * Haal alle producten op inclusief hun type.
- *
- * @return array De lijst met producten.
- * @throws Exception Bij een fout tijdens de databasequery.
- */
 function haalAlleProductenOp() {
     try {
         $db = maakVerbinding();

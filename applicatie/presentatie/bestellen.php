@@ -1,54 +1,46 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 require_once '../logica/paginaFuncties.php';
-require_once '../logica/bestelFuncties.php';
 
-$isLoggedIn = isset($_SESSION['username']);
-$klantGegevens = $isLoggedIn ? haalKlantGegevens($_SESSION['username']) : [];
+$bestellingDetails = $_SESSION['bestelling_afgerond_details'] ?? null;
 
-maakHead();
-maakHeader($isLoggedIn ? "Profiel" : "Inloggen");
+maakHead("Bestelling Voltooid");
+maakHeader("Bestelling Voltooid");
 ?>
 
-<body>
-<form method="post" action="../logica/bestelFuncties.php">
-    <input type="hidden" name="action" value="checkout">
+    <body>
+    <h1>Bedankt voor uw bestelling!</h1>
 
-    <label for="naam">Naam:</label><br>
-    <input type="text" id="naam" name="naam" placeholder="Voor- en achternaam"
-           value="<?= $isLoggedIn ? htmlspecialchars($klantGegevens['first_name'] . ' ' . $klantGegevens['last_name']) : '' ?>"
-        <?= $isLoggedIn ? 'readonly' : 'required' ?>><br><br>
-
-    <label for="adres">Adres:</label><br>
-    <input type="text" id="adres" name="adres" placeholder="Adres"
-           value="<?= $isLoggedIn ? htmlspecialchars($klantGegevens['address']) : '' ?>"
-        <?= $isLoggedIn ? 'readonly' : 'required' ?>><br><br>
-
-    <label for="bestelling">Bestelling:</label><br>
-    <table border="1">
-        <thead>
-        <tr>
-            <th>Product</th>
-            <th>Hoeveelheid</th>
-        </tr>
-        </thead>
-        <tbody>
-        <?php if (!empty($_SESSION['bestelling'])): ?>
-            <?php foreach ($_SESSION['bestelling'] as $product): ?>
+    <?php if ($bestellingDetails): ?>
+        <h2>Bestelgegevens</h2>
+        <p><strong>Naam:</strong> <?= htmlspecialchars($bestellingDetails['naam']) ?></p>
+        <p><strong>Adres:</strong> <?= htmlspecialchars($bestellingDetails['adres']) ?></p>
+        <p><strong>Ordernummer:</strong> <?= htmlspecialchars($bestellingDetails['order_id']) ?></p>
+        <h3>Producten:</h3>
+        <table border="1">
+            <thead>
+            <tr>
+                <th>Product</th>
+                <th>Aantal</th>
+            </tr>
+            </thead>
+            <tbody>
+            <?php foreach ($bestellingDetails['producten'] as $product): ?>
                 <tr>
                     <td><?= htmlspecialchars($product['name']) ?></td>
                     <td><?= htmlspecialchars($product['quantity']) ?></td>
                 </tr>
             <?php endforeach; ?>
-        <?php else: ?>
-            <tr>
-                <td colspan="2">Uw winkelmandje is leeg.</td>
-            </tr>
-        <?php endif; ?>
-        </tbody>
-    </table><br>
+            </tbody>
+        </table>
+    <?php else: ?>
+        <p>Er is geen bestelling om te tonen. Ga terug naar het menu en probeer opnieuw.</p>
+    <?php endif; ?>
 
-    <button type="submit">Bestelling plaatsen</button>
-</form>
-</body>
+    <a href="menu.php">Terug naar menu</a>
+    </body>
 
 <?php maakFooter(); ?>

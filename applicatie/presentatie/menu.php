@@ -4,19 +4,33 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 require_once '../logica/paginaFuncties.php';
-require_once '../logica/menuFuncties.php';
+require_once '../data/productenData.php';
 require_once '../logica/bestelFuncties.php';
+
+function haalMenuProductenOp() {
+    return haalAlleProductenOp();
+}
 
 $productlijst = haalMenuProductenOp();
 $winkelmandje = haalWinkelmandjeOp();
 
-maakHead("Menu");
+$isLoggedIn = isset($_SESSION['username']);
+$naam = '';
+$adres = '';
+
+if ($isLoggedIn) {
+    require_once '../data/gebruikersData.php';
+    $username = $_SESSION['username'];
+    $klantGegevens = haalKlantGegevensOp($username);
+    $naam = $klantGegevens['first_name'] . ' ' . $klantGegevens['last_name'];
+    $adres = $klantGegevens['address'];
+}
+
+maakHead();
 maakHeader("Menu");
 ?>
 
     <body>
-    <h1>Ons Menu</h1>
-
     <?php if (!empty($productlijst)): ?>
         <table>
             <thead>
@@ -86,15 +100,15 @@ maakHeader("Menu");
         <form method="post" action="../logica/menuFuncties.php">
             <input type="hidden" name="action" value="checkout">
             <label for="naam">Naam:</label><br>
-            <input type="text" id="naam" name="naam" placeholder="Uw naam" required><br><br>
+            <input type="text" id="naam" name="naam" placeholder="Uw naam" value="<?= htmlspecialchars($naam) ?>" required><br><br>
             <label for="adres">Adres:</label><br>
-            <input type="text" id="adres" name="adres" placeholder="Uw adres" required><br><br>
+            <input type="text" id="adres" name="adres" placeholder="Uw adres" value="<?= htmlspecialchars($adres) ?>" required><br><br>
             <button type="submit">Afrekenen</button>
         </form>
     <?php else: ?>
         <p>Uw winkelmandje is leeg.</p>
     <?php endif; ?>
 
-    <a href="menu.php">Terug naar menu</a>
     </body>
+
 <?php maakFooter(); ?>

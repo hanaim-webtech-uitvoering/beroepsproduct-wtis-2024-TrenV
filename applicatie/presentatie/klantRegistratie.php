@@ -7,7 +7,7 @@ maakHeader("Registreren als Klant");
 
 <body>
 
-<form action="../logica/registreerFuncties.php" method="post">
+<form action="../logica/gebruikersFuncties.php" method="post">
     <input type="hidden" name="action" value="register">
     <input type="hidden" name="role" value="client">
 

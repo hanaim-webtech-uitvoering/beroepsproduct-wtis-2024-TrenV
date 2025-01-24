@@ -1,7 +1,6 @@
 <?php
 require_once 'db_connectie.php';
 
-
 function voegBestellingToe($klantNaam, $adres, $producten) {
     try {
         $db = maakVerbinding();
@@ -41,9 +40,6 @@ function voegBestellingToe($klantNaam, $adres, $producten) {
     }
 }
 
-/**
- * Haal alle bestellingen op inclusief productdetails.
- */
 function haalAlleBestellingenOp() {
     try {
         $db = maakVerbinding();
@@ -58,7 +54,7 @@ function haalAlleBestellingenOp() {
                 STRING_AGG(CONCAT(pop.product_name, ' (', pop.quantity, ')'), ', ') AS producten
             FROM 
                 Pizza_Order po
-            JOIN 
+            LEFT JOIN 
                 Pizza_Order_Product pop ON po.order_id = pop.order_id
             GROUP BY 
                 po.order_id, po.client_name, po.address, po.datetime, po.status, po.personnel_username
@@ -72,6 +68,47 @@ function haalAlleBestellingenOp() {
     }
 }
 
+function haalBestellingDetails($orderId) {
+    try {
+        $db = maakVerbinding();
+
+        $stmt = $db->prepare("
+            SELECT 
+                po.order_id,
+                po.client_name,
+                po.address,
+                po.datetime,
+                po.status,
+                po.personnel_username
+            FROM 
+                Pizza_Order po
+            WHERE 
+                po.order_id = ?
+        ");
+        $stmt->execute([$orderId]);
+        $bestelling = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$bestelling) {
+            throw new Exception("Geen bestelling gevonden met ID: $orderId");
+        }
+
+        $stmtProducten = $db->prepare("
+            SELECT 
+                product_name AS name,
+                quantity 
+            FROM 
+                Pizza_Order_Product 
+            WHERE 
+                order_id = ?
+        ");
+        $stmtProducten->execute([$orderId]);
+        $bestelling['producten'] = $stmtProducten->fetchAll(PDO::FETCH_ASSOC);
+
+        return $bestelling;
+    } catch (Exception $e) {
+        throw new Exception("Fout bij ophalen van bestellingdetails: " . $e->getMessage());
+    }
+}
 
 function updateBestellingStatus($orderId, $status) {
     try {
@@ -80,6 +117,27 @@ function updateBestellingStatus($orderId, $status) {
         $stmt->execute([$status, $orderId]);
     } catch (Exception $e) {
         throw new Exception("Fout bij het updaten van de bestelstatus: " . $e->getMessage());
+    }
+}
+
+function updateToegewezenMedewerker($orderId, $username) {
+    try {
+        $db = maakVerbinding();
+        $stmt = $db->prepare("UPDATE Pizza_Order SET personnel_username = ? WHERE order_id = ?");
+        $stmt->execute([$username, $orderId]);
+    } catch (Exception $e) {
+        throw new Exception("Fout bij het bijwerken van toegewezen medewerker: " . $e->getMessage());
+    }
+}
+
+function haalAllePersoneelsleden() {
+    try {
+        $db = maakVerbinding();
+        $stmt = $db->prepare("SELECT username FROM [User] WHERE role = 'Personnel'");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (Exception $e) {
+        throw new Exception("Fout bij ophalen van personeelsleden: " . $e->getMessage());
     }
 }
 ?>

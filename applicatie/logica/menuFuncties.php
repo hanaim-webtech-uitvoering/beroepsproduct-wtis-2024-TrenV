@@ -6,13 +6,10 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once '../data/productenData.php';
 require_once '../logica/bestelFuncties.php';
 
-function haalMenuProductenOp() {
-    return haalAlleProductenOp();
-}
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
     $action = $_POST['action'] ?? '';
-    $redirectUrl = '../presentatie/menu.php'; // Standaard terug naar het menu
+    $redirectUrl = '../presentatie/menu.php';
 
     try {
         switch ($action) {
@@ -43,8 +40,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             case 'checkout':
                 if (!empty($_POST['naam']) && !empty($_POST['adres'])) {
                     afrondenBestelling($_POST['naam'], $_POST['adres']);
-                    $_SESSION['bestelling_afgerond'] = true; // Zet een sessievariabele om de status bij te houden
-                    $redirectUrl = '../presentatie/bevestiging.php'; // Verwijs naar bevestigingspagina
+                    $_SESSION['bestelling_afgerond'] = true;
+                    $redirectUrl = '../presentatie/bestellen.php';
                 } else {
                     throw new Exception("Naam of adres ontbreekt bij afrekenen.");
                 }
@@ -54,9 +51,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 throw new Exception("Onbekende actie: $action");
         }
     } catch (Exception $e) {
-        // Opslaan van foutmelding in de sessie voor weergave op de redirectpagina
         $_SESSION['error_message'] = $e->getMessage();
     }
+
 
     header("Location: $redirectUrl");
     exit;

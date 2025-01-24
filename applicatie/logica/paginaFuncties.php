@@ -1,6 +1,5 @@
 <?php
 
-
 function maakHead($title = "Pizzeria Sole Machina 🍕") {
     echo "<!DOCTYPE html>";
     echo "<html lang='nl'>";
@@ -15,12 +14,17 @@ function maakHead($title = "Pizzeria Sole Machina 🍕") {
 function maakHeader($pagina) {
     $isLoggedIn = isset($_SESSION['username']);
     $currentPage = basename($_SERVER['PHP_SELF']);
+
     $menuItems = [
         "index.php" => "Home",
         "menu.php" => "Menu",
         "profiel.php" => "Profiel",
-        "klantLogin.php" => $isLoggedIn ? "Uitloggen" : "Inloggen"
+        "klantLogin.php" => $isLoggedIn ? "Uitloggen" : "Inloggen",
     ];
+
+    if (!$isLoggedIn) {
+        $menuItems["klantRegistratie.php"] = "Registreren";
+    }
 
     echo "<header>";
     echo "<nav class='main-nav'>";
@@ -28,7 +32,7 @@ function maakHeader($pagina) {
 
     foreach ($menuItems as $file => $name) {
         $activeClass = $file === $currentPage ? "class='active'" : "";
-        $url = $file === "klantLogin.php" && $isLoggedIn ? "../logica/uitlogFuncties.php" : $file;
+        $url = ($file === "klantLogin.php" && $isLoggedIn) ? "../logica/uitlogFuncties.php" : $file;
         echo "<li><a href='$url' $activeClass>$name</a></li>";
     }
 

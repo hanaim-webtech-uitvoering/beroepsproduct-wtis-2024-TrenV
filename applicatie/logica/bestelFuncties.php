@@ -23,11 +23,9 @@ function voegProductToeAanWinkelmandje($productName, $quantity) {
     ];
 }
 
-
 function haalWinkelmandjeOp() {
     return $_SESSION['bestelling'] ?? [];
 }
-
 
 function verwijderProductUitWinkelmandje($productName) {
     if (isset($_SESSION['bestelling'])) {
@@ -42,7 +40,6 @@ function verwijderProductUitWinkelmandje($productName) {
         }
     }
 }
-
 
 function verwijderAlleProductenUitWinkelmandje($productName) {
     if (isset($_SESSION['bestelling'])) {
@@ -61,7 +58,15 @@ function afrondenBestelling($klantNaam, $adres) {
     }
 
     try {
-        voegBestellingToe($klantNaam, $adres, $_SESSION['bestelling']);
+        $orderId = voegBestellingToe($klantNaam, $adres, $_SESSION['bestelling']);
+
+        $_SESSION['bestelling_afgerond_details'] = [
+            'naam' => $klantNaam,
+            'adres' => $adres,
+            'order_id' => $orderId,
+            'producten' => $_SESSION['bestelling']
+        ];
+
         $_SESSION['bestelling'] = [];
     } catch (Exception $e) {
         die("Fout bij afronden bestelling: " . htmlspecialchars($e->getMessage()));

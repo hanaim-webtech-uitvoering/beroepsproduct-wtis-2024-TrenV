@@ -59,10 +59,7 @@ maakHeader("Privacyverklaring");
         Om uw rechten uit te oefenen, kunt u contact met ons opnemen via <a href="mailto:privacy@solemachina.com">privacy@solemachina.com</a>.
     </p>
 
-    <h2>Cookies</h2>
-    <p>
-        Onze website maakt gebruik van cookies om uw ervaring te verbeteren. Voor meer informatie over ons gebruik van cookies, verwijzen wij u naar ons <a href="cookiebeleid.php">Cookiebeleid</a>.
-    </p>
+
 
     <h2>Wijzigingen in deze privacyverklaring</h2>
     <p>
